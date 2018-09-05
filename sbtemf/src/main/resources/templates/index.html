@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <!--如果图片报错 403 则在html 下的 head标签里面加上下面这句话-->
+    <meta name="referrer" content="no-referrer" />
+    <title>彼岸壁纸爬取（卢少制作）</title>
+
+    <!--<link rel="shortcut icon" th:href="@{/favicon.ico}"/>-->
+    <!--<link rel="bookmark" th:href="@{/favicon.ico}"/>4-->
+
+    <link href="/js/EasyUI-1.5.1-InsdepTheme-1.0.4/themes/insdep/easyui.css" rel="stylesheet" type="text/css">
+    <link href="/js/EasyUI-1.5.1-InsdepTheme-1.0.4/themes/insdep/icon.css" rel="stylesheet" type="text/css">
+    <link href="/js/EasyUI-1.5.1-InsdepTheme-1.0.4/themes/insdep/iconfont/demo.css" rel="stylesheet" type="text/css">
+    <link href="/js/layer/layui.css" rel="stylesheet" type="text/css">
+
+    <script type="text/javascript" src="/js/EasyUI-1.5.1-InsdepTheme-1.0.4/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/EasyUI-1.5.1-InsdepTheme-1.0.4/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/js/EasyUI-1.5.1-InsdepTheme-1.0.4/themes/insdep/jquery.insdep-extend.min.js"></script>
+    <script type="text/javascript" src="js/layer/layer.js"></script>
+
+    <style type="text/css">
+        ::-webkit-scrollbar{ display:none; }
+        li{list-style:none;}
+        .menu{float: left;
+            margin-left: 600px;
+            height: 60px;
+            width: 310px;
+            background: #e6e5ff;
+            font-size: 14px;
+            border-width:0px;}
+        .title{ width: 80px; text-align: center; margin-left: -10px; }
+        .menu ul{padding:0;margin:0;}
+        .menu ul li{float:left;overflow:hidden;position:relative; height:60px; line-height:30px; text-align:center;}
+        .menu ul li a{position:relative;display:block;width:111px; height:30px;font-family:"微软雅黑", "宋体";font-size:14px;text-decoration:none;cursor:pointer;font-weight:bold;line-height:32px;}
+        .menu ul li a span.out{top:0px;}
+        .menu ul li a span.over,  .menu ul li a span.bg{  top:-30px;  }
+        .viewui-navmenu .navmenu-item,.viewui-navmenu .navmenu-item:first-child {
+            border-style:none;
+        }
+        .viewui-navmenu .navmenu-item:first-child{ border-style:none; }
+        .viewui-navmenu .navmenu-item a:hover{color:pink;}
+        .viewui-navmenu .navmenu-item a.active, .viewui-navmenu .navmenu-item a:hover{
+            background-color:transparent;
+        }
+        .viewui-navmenu .navmenu-item{ width:100px; }
+        a{border: 0px}
+        .imgs{margin: auto}
+        .imgs a{text-decoration:none;}
+        .imgs,.imgs li{float: left;text-align: center;padding: 3px 6px}
+        /*选择图片功能*/
+        .imgdiv{
+            width: 320px;height: 188px;position: relative;
+        }
+        .imgdiv img,.maskk{
+            width: 100%;height: 100%;position: absolute;left: 0;top:0;
+        }
+        .maskk{
+            opacity:0.5;
+            filter:alpha(opacity=50);/*ie兼容*/
+            background:rgba(0,0,0,0.5) url('imgs/OK2.jpg') no-repeat center;
+            z-index:999;
+            display:none;
+            /*display: block;*/
+        }
+        .imgurl{display: none}
+    </style>
+</head>
+<body class="easyui-layout">
+<div data-options="region:'north',split:true" style="height:60px;overflow-y:hidden;" >
+    <div class="easyui-panel" style="padding:0px;">
+        <div style = "padding-top: 0px  ;margin-left:0px;height:50px;overflow-y:hidden; background:#0099cc">
+            <div style="float: left;width:500px;padding-top: 10px;padding-left: 10px;">
+                <font style="padding-top: 10px;font-family: '黑体';font-size: 29px;font-weight: bold; color: #ffffff">
+                    <a style="padding-top: 10px;font-family: '黑体';font-size: 29px;font-weight: bold; color: #ffffff" href="http://www.netbian.com" target="_blank">彼&nbsp;岸&nbsp;壁&nbsp;纸</a>&nbsp;&nbsp;&nbsp;爬取&下载 </font>
+            </div>
+            <div id="menu2" class="menu">
+                <ul class='viewui-navmenu' style="margin-top: 20px">
+                    <li class="navmenu-item">
+                        <a  class="item"  href="#" id='menu1' onclick="mclick(1)">
+                            <span class="title" id="title1">导入新数据</span>
+                        </a></li>
+                    <li class="navmenu-item">
+                        <a  class="item"  href="#" id='menu2' onclick="mclick(2)">
+                            <span class="title" id="title2">分类管理</span>
+                        </a></li>
+                    <li class="navmenu-item">
+                        <a  class="item"  href="#" id='menu3' onclick="mclick(3)">
+                            <span class="title" id="title3">分辨率管理</span>
+                        </a></li>
+                </ul>
+            </div>
+            <!--去往手机壁纸页面-->
+            <div style="float: right;padding: 7px 70px 0 0">
+                <a style="text-decoration:none;" href="/pages/phone?type=phone" class="layui-btn layui-btn-warm">手机壁纸</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div data-options="region:'center'" style="overflow: hidden">
+    <div id="toolbar">
+        <a href="#" iconCls="icon-ok" style="margin:0 10px" class="easyui-linkbutton" onclick="allsele()">全选</a>
+        <a href="#" iconCls="icon-download" style="margin-right: 100px" class="easyui-linkbutton" onclick="imgdownload()">下载</a>
+        <label class="ui-label">分辨率：</label>
+        <input type="text" id="listspxSelect" th:value="${entry.screen}"></input>
+        <label class="ui-label">类型：</label>
+        <input type="text" id="listcategSelect" th:value="${entry.category}"></input>
+        <label class="ui-label">标题：</label>
+        <input class="easyui-textbox" id="title" style="height:32px" th:value="${entry.title}">
+        <!--iconCls="icon-search"-->
+        <button  class="layui-btn layui-btn-normal" onclick="imgquery()">查询</button>
+    </div>
+    <div id="tabs" class="easyui-tabs" style="width:100%;height:93%;padding:0;margin:0;">
+        <!--href='/imgList'-->
+        <div align="center" title="图片列表"  data-options="border:false" style="padding:0px;overflow-y: auto">
+            <ul class="imgs">
+                <li th:each="bn,bnStat : ${bians.list}">
+                    <p class="imgurl" th:id="'imgUrl'+${bnStat.index}" th:text="${bn.url3}"></p>
+                    <!--th  使用js事件必须这么写-->
+                    <!--th:onclick="'javascript:openBox(\''+${curCabNo}+'\',\''+${box.no}+'\')'"-->
+                    <div class="imgdiv"><!--width="320" height="200"-->
+                        <img class="mask" th:onclick="'showOk(\''+${bnStat.index}+'\',\''+${bn.url3}+'\')'"  th:src="${bn.img1}" />
+                        <p class="maskk" th:onclick="'showOk(\''+${bnStat.index}+'\',\''+${bn.url3}+'\')'" th:id="'mask'+${bnStat.index}"></p>
+                    </div>
+                    <div align="left" style="float: left;width: 200px">
+                        <span style="display: block;" th:text="${#strings.abbreviate(bn.title,15)}"></span>
+                        <span th:text="${bn.screen}"></span>
+                        <span th:text="'更新：'+${bn.updatetime}"></span>
+                    </div>
+                    <div style="padding-top: 3px">
+                        <button class="layui-btn layui-btn-sm layui-btn-normal" th:onclick="'showBigImg(\''+${bn.img2}+'\')'">查看</button>
+                        <button class="layui-btn layui-btn-sm layui-btn-normal" th:onclick="'downImg(\''+${bn.url3}+'\')'">下载</button>
+                    </div>
+                </li>
+            </ul>
+            <div th:object="${bians}"  style="border:1px solid #ccc;">
+                <button th:class="*{curPage}==1?'layui-btn layui-btn-sm layui-btn-disabled':'layui-btn layui-btn-sm layui-btn-normal'" th:onclick="'toPage(\''+*{curPage-1}+'\')'">上一页</button>
+                第<span th:text="*{curPage}"></span>页
+                <button th:onclick="'toPage(\''+*{curPage+1}+'\')'" th:class="*{curPage>=allPage}?'layui-btn layui-btn-sm layui-btn-disabled':'layui-btn layui-btn-sm layui-btn-normal'">下一页</button>
+                <button th:onclick="'goPage()'" class="layui-btn layui-btn-sm layui-btn-normal">Go</button>
+                <input class='easyui-numberbox' type='text' id='pageNum' style='width: 60px;'></input>
+                当前<span th:text="${#lists.size(bians.list)}"></span>条
+                共<span th:text="*{allPage}"></span>页  总有<span th:text="*{allData}"></span>条
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div id="divImg" onclick="closeImg()" style="display: none"></div>
+
+<script type="text/javascript">
+
+    /*全选按钮操作*/
+    function allsele() {
+        var nosele= $(".maskk").length;
+        var nonesize=$(".maskk").css("display");
+        var size=0;
+        ids=[];
+        $(".maskk").css("display","block");
+        for (var i=0;i<nosele;i++){
+            var url=$("#imgUrl"+i).text();
+            ids.push(url);
+        }
+    }
+
+    function imgquery() {
+        toPage(1);
+    }
+
+    function toPage(page){
+        var spx=$("#listspxSelect").combobox("getText");
+        var categ=$("#listcategSelect").combobox("getText");
+        var title=$("#title").textbox("getValue");
+        window.location="?page="+page+"&screen="+spx+"&category="+categ+"&title="+title;
+    }
+
+    /*去往指定页面*/
+    function goPage() {
+        var pageNum=$("#pageNum").numberbox("getValue");
+        toPage(pageNum);
+    }
+
+    var ids=[];
+
+    /*取消选中图片*/
+    function moveId(url) {
+        var index=ids.indexOf(url);
+        ids.splice(index,1);
+    }
+
+    /*选中图片*/
+    function showOk(i,url) {
+        var disss=$("#mask"+i).css("display");
+        if(disss=="none"){
+            /*添加数组元素*/
+            ids.push(url);
+            $("#mask"+i).css("display","block");
+        }else {
+            moveId(url);
+            $("#mask"+i).css("display","none");
+        }
+    }
+
+    /*每张图片下的下载按钮*/
+    function downImg(img) {
+//        layer.msg('正在下载这1张壁纸~~~');
+        var imgs=[];
+        imgs.push(img);
+        startDown(imgs);
+        imgs.splice(0,1);
+    }
+
+    /*点击上面第一个下载按钮*/
+    function imgdownload(){
+        if(ids.length<=0){
+            layer.msg('请先选择图片~~~', {icon: 7});
+            return ;
+        }
+        startDown(ids);
+    }
+
+
+    function startDown(ids) {
+        layer.msg('正在下载这'+ids.length+'张壁纸~~~');
+//        后台接收要数组要加‘，’
+        ids=ids.join(",");
+        $.ajax({
+            type:'post',
+            url:'/main/download',
+            dataType:'JSON',
+//		    async:false,
+            data:{"ids":ids},
+            success:function (data) {
+                if(data.status==200){
+                    layer.msg('下载完成~~~', {icon: 6});
+                }else{
+                    layer.msg('下载失败~~~', {icon: 5});
+                }
+            }
+        })
+    }
+
+    /*按esc键 关闭弹出层*/
+    window.onkeyup=function(ev){
+        var key=ev.keyCode||ev.which;
+        if(key==27){ //按下Escape
+            closeImg();
+        }
+    }
+    /*关闭弹出层*/
+    function closeImg() {
+//        layer.closeAll(); //疯狂模式，关闭所有层
+//            layer.closeAll('dialog'); //关闭信息框
+        layer.closeAll('page'); //关闭所有页面层
+//            layer.closeAll('iframe'); //关闭所有的iframe层
+//            layer.closeAll('loading'); //关闭加载层
+//            layer.closeAll('tips'); //关闭所有的tips层
+    }
+
+    /*查看大图*/
+    function showBigImg(img){
+        $("#divImg").html('<img src="'+img+'" />');
+        layer.open({
+            type: 1,
+            title: false,
+//			closeBtn: 0,
+            area: '960px',
+            skin: 'layui-layer-nobg', //没有背景色
+            shadeClose: true,
+            offset: 'center',
+            content: $("#divImg")
+        });
+    }
+
+    $(function(){
+        loadSelect("listcategSelect","/c/all","categoryid","categoryname");
+        loadSelect("listspxSelect","/scr/all","screenid","screenname");
+    });
+
+    /*加载下拉列表*/
+    function loadSelect(selectid,url,valueField,textField){
+        $("#"+selectid).combobox({
+            url: url,//我做的这个调用action后返回的是一个集合，下面两个属性值后面跟的都是集合当中每个对象要显示的，valueField是值，textField:是文本
+            valueField: valueField, //valueField属性后面的value代表的是通过action方法返回的值集合
+            textField: textField //textField属性后面的name代表的是通过action方法返回的文本值集合
+        });
+    }
+
+    function mclick(i){
+        var text=$("#title"+i).text();
+        var hurl;
+        if(i==1) hurl="/pages/addImg";
+        if(i==2) hurl="/pages/category";
+        if(i==3) hurl="/pages/screen";
+        selectOrAddTab(text,hurl);
+    }
+
+    function selectOrAddTab(text, hurl) {
+        var tabs = $("#tabs");
+        //获取指定的 tab 窗口
+        var tab = tabs.tabs("getTab", text);
+        if (tab) {//显示当前的tabs
+            tabs.tabs("select", text);
+        } else {//新增一个tabs
+            tabs.tabs('add', {
+                title : text,
+                href : hurl,
+                closable : true,//添加一个关闭按钮
+                bodyCls : "content"
+            });
+        }
+    }
+
+    /*
+        得到选中的复选框
+        lid 	列表id
+        field	一般写与表主键id对应的实体类字段名（根据需求更改）
+     */
+    function getSelectIds(lid, field) {
+        var sels = $("#" + lid).datagrid("getSelections");
+        var ids = [];
+        for ( var i in sels) {
+            ids.push(sels[i][field]);
+        }
+        ids = ids.join(",");
+        return ids;
+    }
+    //$.ajaxSettings.async = false;//全局异步提交为false
+    /*
+        删除选中的项   点击删除按钮
+        ids		选中的个数
+        lid		列表id
+        callback	需要执行的函数（可不填）
+    */
+    function execute(func) {
+        func();
+    }
+    function deletefun(ids, url, lid, callback) {
+        //$.ajaxSettings.async = false;
+        var idNum = ids.split(',').length;//截取字符串得到数组，length表示长度
+        if (ids.length == 0) {
+            $.messager.alert('提示', '什么都没有选择~~~');
+            return;
+        }
+        $.messager.confirm('确认', '确定操作这' + idNum + '条数据吗？', function(r) {
+            if (r) {
+                var params = {
+                    "ids" : ids
+                };
+                $.post(url, params, function(data) {
+                    if (data.status == 200) {
+                        $.messager.alert('提示', '操作成功~~~', undefined,
+                            function() {
+                                $("#" + lid).datagrid("reload");
+                                execute(callback);//执行一个函数
+                            });
+                    } else {
+                        $.messager.alert('提示', '操作失败~~~');
+                        return false;
+                    }
+                });
+            }
+        });
+    }
+    /*
+        提交表单
+        formid  form表单id
+        url     表单提交地址
+        val     添加的表单是1，编辑的表单是2
+        windid  窗口的id val为1的时候可不填，为2的时候要写
+        listid  列表的id
+     */
+    function commitForm(formid, url, listid, windid, val) {
+        //有效性验证
+        if (!$('#' + formid).form('validate')) {
+            $.messager.alert('提示', '表单还未填写完成!');
+            return;
+        }
+        $.post(url, $("#" + formid).serialize(), function(data) {
+            if (data.status == 200) {
+                $.messager.alert('提示', '操作成功~~~', 'info', function() {
+                    if (val == 2) {
+                        //关闭表单
+                        $("#" + windid).window('close');
+                    }
+                    if(val==0){
+                        $('#'+formid).form('reset');
+                    }
+                    $("#" + listid).datagrid("reload");
+                });
+            } else {
+                $.messager.alert('提示', '操作失败~~~');
+                return false;
+            }
+        });
+    }
+</script>
+</body>
+</html>

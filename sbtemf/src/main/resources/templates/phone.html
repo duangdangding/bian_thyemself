@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <!--如果图片报错 403 则在html 下的 head标签里面加上下面这句话-->
+    <!--<meta name="referrer" content="no-referrer" />-->
+    <title>手机壁纸爬取（卢少制作）</title>
+
+    <!--<link rel="shortcut icon" th:href="@{/favicon.ico}"/>-->
+    <!--<link rel="bookmark" th:href="@{/favicon.ico}"/>4-->
+
+    <link href="/js/EasyUI-1.5.1-InsdepTheme-1.0.4/themes/insdep/easyui.css" rel="stylesheet" type="text/css">
+    <link href="/js/EasyUI-1.5.1-InsdepTheme-1.0.4/themes/insdep/icon.css" rel="stylesheet" type="text/css">
+    <link href="/js/EasyUI-1.5.1-InsdepTheme-1.0.4/themes/insdep/iconfont/demo.css" rel="stylesheet" type="text/css">
+    <link href="/js/layer/layui.css" rel="stylesheet" type="text/css">
+
+    <script type="text/javascript" src="/js/EasyUI-1.5.1-InsdepTheme-1.0.4/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/EasyUI-1.5.1-InsdepTheme-1.0.4/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/js/EasyUI-1.5.1-InsdepTheme-1.0.4/themes/insdep/jquery.insdep-extend.min.js"></script>
+    <script type="text/javascript" src="/js/layer/layer.js"></script>
+
+    <style type="text/css">
+        ::-webkit-scrollbar{ display:none; }
+        .imgs{margin: auto}
+        .imgs a{text-decoration:none;}
+        .imgs,.imgs li{float: left;text-align: center;padding: 3px 6px}
+        li{list-style:none;}
+        /*选择图片功能*/
+        .imgdiv{
+            width: 126px;height: 220px;position: relative;padding: 30px;
+        }
+        .imgdiv img,.maskk{
+            width: 100%;height: 100%;position: absolute;left: 0;top:0;
+        }
+        .maskk{
+            opacity:0.5;
+            filter:alpha(opacity=50);/*ie兼容*/
+            background:rgba(0,0,0,0.5) url('/imgs/OK2.jpg') no-repeat center;
+            z-index:999;
+            display:none;
+            /*display: block;*/
+        }
+        .imgurl{display: none}
+    </style>
+</head>
+<body  >
+
+<!--<div data-options="region:'center'" style="overflow: hidden">-->
+<div id="toolbar">
+    <a href="#" iconCls="icon-ok" style="margin:0 10px" class="easyui-linkbutton" onclick="allsele()">全选</a>
+    <a href="#" iconCls="icon-download" style="margin-right: 100px" class="easyui-linkbutton" onclick="imgdownload()">下载</a>
+    <label class="ui-label">分辨率：</label>
+    <input type="text" id="listspxSelect" th:value="${phoneQu.screen}"></input>
+    <label class="ui-label">类型：</label>
+    <input type="text" id="listcategSelect" th:value="${phoneQu.category}"></input>
+    <label class="ui-label">标题：</label>
+    <input class="easyui-textbox" id="title" style="height:32px" th:value="${phoneQu.title}">
+    <button  class="layui-btn layui-btn-normal" onclick="imgquery()">查询</button>
+    <!--去往手机壁纸页面-->
+    <a style="text-decoration:none;margin-left: 100px" th:href="@{/}" class="layui-btn layui-btn-warm">》》首页</a>
+</div>
+
+<!--<div id="tabs" class="easyui-tabs" style="width:100%;height:93%;padding:0;margin:0;">-->
+<!--href='/imgList'-->
+<div align="center" title="图片列表"  data-options="border:false" style="padding:0px;margin: 0 auto;">
+    <ul class="imgs">
+        <li style="width: 210px" th:each="phone,phoneStat : ${phones.list}">
+            <p class="imgurl" th:id="'imgUrl'+${phoneStat.index}" th:text="${phone.wpimg2}"></p>
+            <!--th  使用js事件必须这么写-->
+            <!--th:onclick="'javascript:openBox(\''+${curCabNo}+'\',\''+${box.no}+'\')'"-->
+            <div class="imgdiv"><!--width="320" height="200"-->
+                <img class="mask" th:onclick="'showOk(\''+${phoneStat.index}+'\',\''+${phone.wpimg2}+'\')'"  th:src="${phone.wpimg1}" />
+                <p class="maskk" th:onclick="'showOk(\''+${phoneStat.index}+'\',\''+${phone.wpimg2}+'\')'" th:id="'mask'+${phoneStat.index}"></p>
+            </div>
+            <div align="left" style="float: left;width: 80px">
+                <span style="display: block;" th:text="${#strings.abbreviate(phone.wptitle,8)}"></span>
+                <span th:text="${phone.wpscreen}"></span>
+                <!--<span th:text="'更新：'+${phone.updatetime}"></span>-->
+            </div>
+            <div style="padding-top: 3px">
+                <button style="margin-right: -10px" class="layui-btn layui-btn-sm layui-btn-normal" th:onclick="'showBigImg(\''+${phone.wpimg2}+'\')'">查看</button>
+                <button class="layui-btn layui-btn-sm layui-btn-normal" th:onclick="'downImg(\''+${phone.wpimg2}+'\')'">下载</button>
+            </div>
+        </li>
+    </ul>
+    <div th:object="${phones}"  style="border:1px solid #ccc;">
+        <button th:class="*{curPage}==1?'layui-btn layui-btn-sm layui-btn-disabled':'layui-btn layui-btn-sm layui-btn-normal'" th:onclick="'toPage(\''+*{curPage-1}+'\')'">上一页</button>
+        第<span th:text="*{curPage}"></span>页
+        <button th:onclick="'toPage(\''+*{curPage+1}+'\')'" th:class="*{curPage>=allPage}?'layui-btn layui-btn-sm layui-btn-disabled':'layui-btn layui-btn-sm layui-btn-normal'">下一页</button>
+        <button th:onclick="'goPage()'" class="layui-btn layui-btn-sm layui-btn-normal">Go</button>
+        <input class='easyui-numberbox' type='text' id='pageNum' style='width: 60px;'></input>
+        当前<span th:text="${#lists.size(phones.list)}"></span>条
+        共<span th:text="*{allPage}"></span>页  总有<span th:text="*{allData}"></span>条
+    </div>
+</div>
+<!--</div>-->
+<!--</div>-->
+
+
+<div id="divImg" onclick="closeImg()" style="display: none"></div>
+
+<script type="text/javascript">
+
+    /*全选按钮操作*/
+    function allsele() {
+        var nosele= $(".maskk").length;
+        var nonesize=$(".maskk").css("display");
+        var size=0;
+        ids=[];
+        $(".maskk").css("display","block");
+        for (var i=0;i<nosele;i++){
+            var url=$("#imgUrl"+i).text();
+            ids.push(url);
+        }
+    }
+
+    function imgquery() {
+        toPage(1);
+    }
+
+    function toPage(page){
+        var spx=$("#listspxSelect").combobox("getText");
+        var categ=$("#listcategSelect").combobox("getText");
+        var title=$("#title").textbox("getValue");
+        debugger;
+        window.location="/pages/phone?type=phone&page="+page+"&screen="+spx+"&category="+categ+"&title="+title;
+    }
+
+    /*去往指定页面*/
+    function goPage() {
+        var pageNum=$("#pageNum").numberbox("getValue");
+        toPage(pageNum);
+    }
+
+    var ids=[];
+
+    /*取消选中图片*/
+    function moveId(url) {
+        var index=ids.indexOf(url);
+        ids.splice(index,1);
+    }
+
+    /*选中图片*/
+    function showOk(i,url) {
+        var disss=$("#mask"+i).css("display");
+        if(disss=="none"){
+            /*添加数组元素*/
+            ids.push(url);
+            $("#mask"+i).css("display","block");
+        }else {
+            moveId(url);
+            $("#mask"+i).css("display","none");
+        }
+    }
+
+    /*每张图片下的下载按钮*/
+    function downImg(img) {
+//        layer.msg('正在下载这1张壁纸~~~');
+        var imgs=[];
+        imgs.push(img);
+        startDown(imgs);
+        imgs.splice(0,1);
+    }
+
+    /*点击上面第一个下载按钮*/
+    function imgdownload(){
+        if(ids.length<=0){
+            layer.msg('请先选择图片~~~', {icon: 7});
+            return ;
+        }
+        startDown(ids);
+    }
+
+
+    function startDown(ids) {
+        layer.msg('正在下载这'+ids.length+'张壁纸~~~');
+//        后台接收要数组要加‘，’
+        ids=ids.join(",");
+        $.ajax({
+            type:'post',
+            url:'/main/download',
+            dataType:'JSON',
+//		    async:false,
+            data:{"ids":ids},
+            success:function (data) {
+                if(data.status==200){
+                    layer.msg('下载完成~~~', {icon: 6});
+                }else{
+                    layer.msg('下载失败~~~', {icon: 5});
+                }
+            }
+        })
+    }
+
+    /*按esc键 关闭弹出层*/
+    window.onkeyup=function(ev){
+        var key=ev.keyCode||ev.which;
+        if(key==27){ //按下Escape
+            closeImg();
+        }
+    }
+    /*关闭弹出层*/
+    function closeImg() {
+        layer.closeAll('page'); //关闭所有页面层
+    }
+
+    /*查看大图*/
+    function showBigImg(img){
+        $("#divImg").html('<img width="100%" src="'+img+'" />');
+        layer.open({
+            type: 1,
+            title: false,
+//			closeBtn: 0,'540px','960px'
+            area: ['360px','640px'],
+            skin: 'layui-layer-nobg', //没有背景色
+            shadeClose: true,
+            offset: '8px',
+            content: $("#divImg")
+        });
+    }
+
+    $(function(){
+        loadSelect("listcategSelect","/c/all","categoryid","categoryname");
+        loadSelect("listspxSelect","/scr/all","screenid","screenname");
+    });
+
+    /*加载下拉列表*/
+    function loadSelect(selectid,url,valueField,textField){
+        $("#"+selectid).combobox({
+            url: url,//我做的这个调用action后返回的是一个集合，下面两个属性值后面跟的都是集合当中每个对象要显示的，valueField是值，textField:是文本
+            valueField: valueField, //valueField属性后面的value代表的是通过action方法返回的值集合
+            textField: textField //textField属性后面的name代表的是通过action方法返回的文本值集合
+        });
+    }
+
+</script>
+</body>
+</html>

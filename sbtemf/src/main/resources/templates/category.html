@@ -1,0 +1,44 @@
+<div id="categorytoolbar">
+    <a href="#" iconCls="icon-add" class="easyui-linkbutton" onclick="cateadd()">添加</a>
+    <a href="#" iconCls="icon-cancel" class="easyui-linkbutton" onclick="catedel()">删除</a>
+</div>
+
+<table class="easyui-datagrid" title="分类列表" id="categoryList" data-options="singleSelect:false,url:'/c/all',
+       		method:'get',toolbar:'#categorytoolbar'">
+    <thead>
+    <tr>
+        <th data-options="field:'ck',checkbox:true"></th>
+        <th data-options="field:'categoryid',hidden:'true'">id</th>
+        <th data-options="field:'categoryname',width:'300px',align:'center'">名称</th>
+    </tr>
+    </thead>
+</table>
+
+<div id="addcateWind" class="easyui-window" title="添加分类"
+     data-options="modal:true,closed:true,iconCls:'icon-save'" style="width:300px;height:150px;padding:10px;">
+
+    <form id="cateForm" class="itemForm" method="post">
+        名称：
+        <input class='easyui-textbox' type='text' name='categoryname' data-options='required:true' style='width: 180px;'></input>
+    </form>
+    <div align="center" style="padding: 5px;">
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="catesubmitForm()">确定</a>
+        <a style="margin-left: 55px" href="javascript:void(0)" class="easyui-linkbutton" onclick="$('#addcateWind').window('close')">取消</a>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    function cateadd() {
+        $('#addcateWind').window('open');
+    }
+
+    function catesubmitForm() {
+        commitForm("cateForm", "/c/add", "categoryList", "addcateWind");
+    }
+
+    function catedel(){
+        var ids=getSelectIds("categoryList", "categoryid");
+        deletefun(ids, "/c/del", "categoryList");
+    }
+</script>

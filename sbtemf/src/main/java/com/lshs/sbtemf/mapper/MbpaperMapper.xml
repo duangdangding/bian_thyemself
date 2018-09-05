@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lshs.sbtemf.mapper.MbpaperMapper">
+	<!--<resultMap id="BaseResultMap" type="com.lshs.sbtemf.entry.BiAn">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="title" jdbcType="VARCHAR" property="title" />
+		<result column="url1" jdbcType="VARCHAR" property="url1" />
+		<result column="url2" jdbcType="VARCHAR" property="url2" />
+		<result column="url3" jdbcType="VARCHAR" property="url3" />
+		<result column="screen" jdbcType="VARCHAR" property="screen" />
+		<result column="category" jdbcType="VARCHAR" property="category" />
+		<result column="img1" jdbcType="VARCHAR" property="img1" />
+		<result column="img2" jdbcType="VARCHAR" property="img2" />
+		<result column="updatetime" jdbcType="VARCHAR" property="updatetime" />
+		<result column="page" jdbcType="INTEGER" property="page" />
+		<result column="fromurl" jdbcType="VARCHAR" property="fromurl" />
+		<result column="count" jdbcType="INTEGER" property="imgNum" />
+	</resultMap>-->
+
+	<insert id="add" parameterType="com.lshs.sbtemf.entry.Mbpaper">
+		insert into mbpaper(wptitle,updatetime,wpimg1,wpimg2,wpscreen,wpcategory,wpaddtime)
+		values(#{wptitle},#{updatetime},#{wpimg1},#{wpimg2},#{wpscreen},#{wpcategory},#{wpaddtime})
+	</insert>
+
+	<select id="findByCase" resultType="com.lshs.sbtemf.entry.Mbpaper">
+		select * from mbpaper
+		<where>
+			<if test="screen !='' and screen!=null">
+				and wpscreen=#{screen}
+			</if>
+			<if test="category !='' and category !=null">
+				and wpcategory=#{category}
+			</if>
+			<if test="title !='' and title !=null">
+				and wptitle LIKE CONCAT('%',#{title},'%')
+			</if>
+		</where>
+		order by wpaddtime,updatetime desc
+	</select>
+
+	<delete id="delete">
+		delete from mbpaper
+	</delete>
+
+</mapper>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lshs.sbtemf.mapper.ScreensMapper" >
+  <resultMap id="BaseResultMap" type="com.lshs.sbtemf.entry.Screens" >
+    <id column="screenid" property="screenid" jdbcType="INTEGER" />
+    <result column="screenname" property="screenname" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    screenid, screenname
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from screens
+    where screenid = #{screenid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from screens
+    where screenid = #{screenid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.lshs.sbtemf.entry.Screens" >
+    insert into screens (screenid, screenname)
+    values (#{screenid,jdbcType=INTEGER}, #{screenname,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lshs.sbtemf.entry.Screens" >
+    insert into screens
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="screenid != null" >
+        screenid,
+      </if>
+      <if test="screenname != null" >
+        screenname,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="screenid != null" >
+        #{screenid,jdbcType=INTEGER},
+      </if>
+      <if test="screenname != null" >
+        #{screenname,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lshs.sbtemf.entry.Screens" >
+    update screens
+    <set >
+      <if test="screenname != null" >
+        screenname = #{screenname,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where screenid = #{screenid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lshs.sbtemf.entry.Screens" >
+    update screens
+    set screenname = #{screenname,jdbcType=VARCHAR}
+    where screenid = #{screenid,jdbcType=INTEGER}
+  </update>
+
+	<select id="findAll" resultMap="BaseResultMap">
+		SELECT * FROM screens
+	</select>
+
+	<!-- 批量删除 -->
+	<delete id="delete" parameterType="integer">
+		delete from screens where screenid in
+		<foreach collection="array" item="screenid" separator="," open="(" close=")">
+			#{screenid}
+		</foreach>
+	</delete>
+</mapper>

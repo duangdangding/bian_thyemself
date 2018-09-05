@@ -1,0 +1,90 @@
+<div style="padding: 10px">
+
+    <label class="ui-label">分辨率：</label>
+    <input type="text" id="addspxSelect" data-options='required:true'></input>
+    <label class="ui-label">第</label>
+    <input class='easyui-numberbox' id="imgpageNum" type="text" style="width: 50px"></input>
+    <label class="ui-label">页</label>&nbsp;&nbsp;&nbsp;
+    <label class="ui-label">从：</label>
+    <input class='easyui-numberbox' type='text' id='start' style='width: 50px;'></input>
+    <label class="ui-label">到：</label>
+    <input class='easyui-numberbox' type='text' id='end' style='width: 50px;'></input>
+    <a href="#" iconCls="icon-search" class="easyui-linkbutton" onclick="addImg()">录入</a>
+    <a href="#" iconCls="icon-search" class="easyui-linkbutton" onclick="firstData()">查询最新记录</a>
+    <!--<a href="#" iconCls="icon-search" class="easyui-linkbutton" onclick="lastData()">查询最后一条</a>-->
+
+    <div id="lastData" style="padding-top: 10px" align="center"></div>
+
+    <!--<div style="font-size: 12px;color: red;padding: 30px">
+        说明：<p style="margin-left: 10px">录入：要选择分辨率、然后你浏览的分辨率的第几页，需要添加这一页的多少个</p>
+        <p style="margin-left: 10px">查询最后一条：按照分辨率查询数据库第一条，然后和网站内容比对，方便准确的录入新数据</p>
+    </div>-->
+</div>
+
+
+<script type="text/javascript">
+
+    $(function(){
+        loadSelect("addcategSelect","/c/all","categoryid","categoryname");
+        loadSelect("addspxSelect","/scr/all","screenid","screenname");
+    });
+
+    function addImg() {
+        var spx=$("#addspxSelect").combobox("getText");
+        var pageNum=$("#imgpageNum").numberbox("getValue");
+        var start=$("#start").numberbox("getValue");
+        var end=$("#end").numberbox("getValue");
+
+        if(spx!=""&&pageNum!=""&&start!=""&&end!=""){
+            var size=end-start+1;
+            layer.msg("开始录入~~~");
+            $.ajax({
+                type:"get",
+                url:"/main/add",
+                dataType:"json",
+                data:{"screen":spx,"pageNum":pageNum,"start":start,"end":end},
+                success:function (data) {
+                    var status=data.status;
+                    if(status==404){
+                        layer.msg("录入失败404~~~", {icon: 5});
+                    }
+                    if(status==200){
+                        layer.msg(size+"条数据录入成功~~~", {icon: 6});
+                    }
+                    if(status==500){
+                        layer.msg("录入失败500~~~", {icon: 5});
+                    }
+                }
+            });
+        }else {
+            layer.msg('录入条件必须全部填写~~~', {icon: 7});
+        }
+    }
+
+    function firstData(){
+        query("/main/first");
+    }
+    /*function lastData(){
+        query("/main/last");
+    }*/
+
+    function query(url){
+        var spx=$("#addspxSelect").combobox("getText");
+        if(spx!=""){
+            $.ajax({
+                type:'get',
+                url:url,
+                dataType:'JSON',
+                data:{"spx":spx},
+                success:function (data) {
+//                    var content="<p>"+data.title+"~~~~~~第"+data.page+"页~~~共"+data.imgNum+"个</p><img src='"+data.img2+"' />";
+                    var content="<p>"+data.title+"</p><img src='"+data.img2+"' />";
+                    $("#lastData").html(content);
+                }
+            });
+
+        }else {
+            layer.msg('请填写分辨率~~~', {icon: 7});
+        }
+    }
+</script>

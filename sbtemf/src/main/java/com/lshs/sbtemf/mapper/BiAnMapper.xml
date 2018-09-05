@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lshs.sbtemf.mapper.BiAnMapper">
+  <resultMap id="BaseResultMap" type="com.lshs.sbtemf.entry.BiAn">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="url1" jdbcType="VARCHAR" property="url1" />
+    <result column="url2" jdbcType="VARCHAR" property="url2" />
+    <result column="url3" jdbcType="VARCHAR" property="url3" />
+    <result column="screen" jdbcType="VARCHAR" property="screen" />
+    <result column="category" jdbcType="VARCHAR" property="category" />
+    <result column="img1" jdbcType="VARCHAR" property="img1" />
+    <result column="img2" jdbcType="VARCHAR" property="img2" />
+    <result column="updatetime" jdbcType="VARCHAR" property="updatetime" />
+    <result column="page" jdbcType="INTEGER" property="page" />
+    <result column="fromurl" jdbcType="VARCHAR" property="fromurl" />
+    <result column="count" jdbcType="INTEGER" property="imgNum" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, title, url1, url2, url3, screen, category, img1, img2, updatetime, page, fromurl
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from bian
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from bian
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.lshs.sbtemf.entry.BiAn">
+    insert into bian (id, title, url1,
+      url2, url3, screen,
+      category, img1, img2,
+      updatetime, page, fromurl
+      )
+    values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{url1,jdbcType=VARCHAR},
+      #{url2,jdbcType=VARCHAR}, #{url3,jdbcType=VARCHAR}, #{screen,jdbcType=VARCHAR},
+      #{category,jdbcType=VARCHAR}, #{img1,jdbcType=VARCHAR}, #{img2,jdbcType=VARCHAR},
+      #{updatetime,jdbcType=VARCHAR}, #{page,jdbcType=INTEGER}, #{fromurl,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.lshs.sbtemf.entry.BiAn">
+    insert into bian
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="url1 != null">
+        url1,
+      </if>
+      <if test="url2 != null">
+        url2,
+      </if>
+      <if test="url3 != null">
+        url3,
+      </if>
+      <if test="screen != null">
+        screen,
+      </if>
+      <if test="category != null">
+        category,
+      </if>
+      <if test="img1 != null">
+        img1,
+      </if>
+      <if test="img2 != null">
+        img2,
+      </if>
+      <if test="updatetime != null">
+        updatetime,
+      </if>
+      <if test="page != null">
+        page,
+      </if>
+      <if test="fromurl != null">
+        fromurl,
+      </if>
+      <if test="addtime != null">
+	      addtime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="url1 != null">
+        #{url1,jdbcType=VARCHAR},
+      </if>
+      <if test="url2 != null">
+        #{url2,jdbcType=VARCHAR},
+      </if>
+      <if test="url3 != null">
+        #{url3,jdbcType=VARCHAR},
+      </if>
+      <if test="screen != null">
+        #{screen,jdbcType=VARCHAR},
+      </if>
+      <if test="category != null">
+        #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="img1 != null">
+        #{img1,jdbcType=VARCHAR},
+      </if>
+      <if test="img2 != null">
+        #{img2,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null">
+        #{updatetime,jdbcType=VARCHAR},
+      </if>
+      <if test="page != null">
+        #{page,jdbcType=INTEGER},
+      </if>
+      <if test="fromurl != null">
+        #{fromurl,jdbcType=VARCHAR},
+      </if>
+      <if test="addtime != null">
+        #{addtime,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lshs.sbtemf.entry.BiAn">
+    update bian
+    <set>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="url1 != null">
+        url1 = #{url1,jdbcType=VARCHAR},
+      </if>
+      <if test="url2 != null">
+        url2 = #{url2,jdbcType=VARCHAR},
+      </if>
+      <if test="url3 != null">
+        url3 = #{url3,jdbcType=VARCHAR},
+      </if>
+      <if test="screen != null">
+        screen = #{screen,jdbcType=VARCHAR},
+      </if>
+      <if test="category != null">
+        category = #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="img1 != null">
+        img1 = #{img1,jdbcType=VARCHAR},
+      </if>
+      <if test="img2 != null">
+        img2 = #{img2,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null">
+        updatetime = #{updatetime,jdbcType=VARCHAR},
+      </if>
+      <if test="page != null">
+        page = #{page,jdbcType=INTEGER},
+      </if>
+      <if test="fromurl != null">
+        fromurl = #{fromurl,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lshs.sbtemf.entry.BiAn">
+    update bian
+    set title = #{title,jdbcType=VARCHAR},
+      url1 = #{url1,jdbcType=VARCHAR},
+      url2 = #{url2,jdbcType=VARCHAR},
+      url3 = #{url3,jdbcType=VARCHAR},
+      screen = #{screen,jdbcType=VARCHAR},
+      category = #{category,jdbcType=VARCHAR},
+      img1 = #{img1,jdbcType=VARCHAR},
+      img2 = #{img2,jdbcType=VARCHAR},
+      updatetime = #{updatetime,jdbcType=VARCHAR},
+      page = #{page,jdbcType=INTEGER},
+      fromurl = #{fromurl,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+	<delete id="deleteBian">
+		DELETE from bian
+	</delete>
+
+	<!--<select id="lastData" resultMap="BaseResultMap" parameterType="string">
+		SELECT * FROM bian a,
+			(select max(id) id,count(*) count from bian b where page=
+				(select max(page) from bian where screen=#{spx}) and screen=#{spx}) b
+					where a.id=b.id;
+	</select>-->
+
+	<select id="firstData" resultMap="BaseResultMap" parameterType="string">
+		SELECT * from bian where screen=#{spx} and addtime=
+		(SELECT max(addtime) FROM bian where screen=#{spx});
+	</select>
+
+	<select id="findByCase" resultMap="BaseResultMap" parameterType="com.lshs.sbtemf.entry.QueryEntry">
+		SELECT * FROM bian
+		<where>
+			<if test="screen !='' and screen!=null">
+				and screen=#{screen}
+			</if>
+			<if test="category !='' and category !=null">
+				and category=#{category}
+			</if>
+			<if test="title !='' and title !=null">
+				and title LIKE CONCAT('%',#{title},'%')
+			</if>
+		</where>
+		order by addtime desc
+	</select>
+</mapper>

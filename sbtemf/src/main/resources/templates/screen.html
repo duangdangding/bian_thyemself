@@ -1,0 +1,44 @@
+<div id="spxtoolbar">
+    <a href="#" iconCls="icon-add" class="easyui-linkbutton" onclick="spxadd()">添加</a>
+    <a href="#" iconCls="icon-cancel" class="easyui-linkbutton" onclick="spxdel()">删除</a>
+</div>
+
+<table class="easyui-datagrid" title="分辨率列表" id="spxList" data-options="singleSelect:false,url:'/scr/all',
+       		method:'get',toolbar:'#spxtoolbar'">
+    <thead>
+    <tr>
+        <th data-options="field:'ck',checkbox:true"></th>
+        <th data-options="field:'screenid',hidden:'true'">id</th>
+        <th data-options="field:'screenname',width:'200px',align:'center'">分辨率</th>
+    </tr>
+    </thead>
+</table>
+
+<div id="addspxWind" class="easyui-window" title="添加分辨率类别"
+     data-options="modal:true,closed:true,iconCls:'icon-save'" style="width:300px;height:150px;padding:10px;">
+
+    <form id="spxForm" class="itemForm" method="post">
+        分辨率：
+        <input class='easyui-textbox' type='text' name='screenname' data-options='required:true' style='width: 180px;'></input>
+    </form>
+    <div align="center" style="padding: 5px;">
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="spxsubmitForm()">确定</a>
+        <a style="margin-left: 55px" href="javascript:void(0)" class="easyui-linkbutton" onclick="$('#addspxWind').window('close')">取消</a>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    function spxadd() {
+        $('#addspxWind').window('open');
+    }
+
+    function spxsubmitForm() {
+        commitForm("spxForm", "/scr/add", "spxList", "addspxWind");
+    }
+
+    function spxdel(){
+        var ids=getSelectIds("spxList", "screenid");
+        deletefun(ids, "/scr/del", "spxList");
+    }
+</script>
